@@ -15,17 +15,20 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity 
+{
+	// The maximum time that should pass before the user gets a location update.
+	private GoogleMap mMap;
+	private final int zoomLevel = 16;
 
-	GoogleMap mMap;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		getCurrentPosition();
-		setPositionOnMap();
+		getMapObject();
+		setPositionOnMap(retrieveLocation(), zoomLevel);
 	}
 
 	@Override
@@ -34,12 +37,10 @@ public class MainActivity extends FragmentActivity {
 		return true;
 	}
 
-
 	/**
-	 * Displays the user's current position on the map
+	 * Get the GoogleMap object
 	 */
-	public void getCurrentPosition(){
-
+	public void getMapObject(){
 		if (mMap == null) {
 			mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
 					.getMap();
@@ -53,23 +54,36 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	/**
+	 * Retrieves the user location
+	 * @return
+	 */
+	public Location retrieveLocation(){
+		LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+		Location myLocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+		if (myLocation == null) {
+			Criteria criteria = new Criteria();
+			criteria.setAccuracy(Criteria.ACCURACY_FINE);
+			String provider = lm.getBestProvider(criteria, true);
+			myLocation = lm.getLastKnownLocation(provider);
+		}
+		return myLocation;
+	}
+	
+	/**
 	 * Centers the view on the user's position and zoom on it  
 	 */
-	private void setPositionOnMap() {
-		Criteria criteria = new Criteria();
-		LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		String provider = locationManager.getBestProvider(criteria, false);
-		Location location = locationManager.getLastKnownLocation(provider);
+	private void setPositionOnMap(Location location, int zoomLevel) {
+
 		double lat =  location.getLatitude();
 		double lng = location.getLongitude();
 		LatLng coordinate = new LatLng(lat, lng);
-
 		CameraUpdate center=
 				CameraUpdateFactory.newLatLng(coordinate);
-		CameraUpdate zoom=CameraUpdateFactory.zoomTo(15);
+		CameraUpdate zoom=CameraUpdateFactory.zoomTo(zoomLevel);
 
 		mMap.moveCamera(center);
 		mMap.animateCamera(zoom);
-	}
 
+	}
 }
