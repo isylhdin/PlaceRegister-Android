@@ -1,7 +1,5 @@
 package com.placeregister.places;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,20 +31,20 @@ public class GooglePlaces {
 		this.context = context;
 	}
 
-	private String buildURL(Location location, double radius) throws UnsupportedEncodingException{
-		StringBuilder url = new StringBuilder(PLACES_SEARCH_URL);
-		url.append("key=" + PropertiesUtil.getProperty(context, "API_KEY"));
-		url.append("&");
-		url.append("location=" + location.getLatitude() + "," + location.getLongitude());
-		url.append("&");
-		url.append("radius=" + radius); // in meters.
-		url.append("&");
-		url.append("types=" + URLEncoder.encode(PropertiesUtil.getProperty(context, "types"),"UTF-8"));
-		url.append("&");
-		url.append("sensor=true");
-
-		return url.toString();
-	}
+//	private String buildURL(Location location, double radius) throws UnsupportedEncodingException{
+//		StringBuilder url = new StringBuilder(PLACES_SEARCH_URL);
+//		url.append("key=" + PropertiesUtil.getProperty(context, "API_KEY"));
+//		url.append("&");
+//		url.append("location=" + location.getLatitude() + "," + location.getLongitude());
+//		url.append("&");
+//		url.append("radius=" + radius); // in meters.
+//		url.append("&");
+//		url.append("types=" + URLEncoder.encode(PropertiesUtil.getProperty(context, "types"),"UTF-8"));
+//		url.append("&");
+//		url.append("sensor=true");
+//
+//		return url.toString();
+//	}
 
 	/**
 	 * 
@@ -70,9 +68,6 @@ public class GooglePlaces {
 		.appendQueryParameter("types", PropertiesUtil.getProperty(context, "types"))
 		.appendQueryParameter("sensor", String.valueOf(true))
 		.build();
-
-
-//		URI uri = new URI (buildURL(location, radius));
 
 		HttpClient httpclient = new DefaultHttpClient();
 		HttpGet httpget = new HttpGet(uri.toString()); 
