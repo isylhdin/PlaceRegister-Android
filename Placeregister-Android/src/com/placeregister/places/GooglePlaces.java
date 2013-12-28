@@ -21,6 +21,12 @@ import android.util.Log;
 
 import com.placeregister.utils.PropertiesUtil;
 
+/**
+ * TODO : Ce fichier doit contenir les classes utilitaires à la manipulation des données de google map
+ * ==> Renommer la classe
+ * @author yoann
+ *
+ */
 public class GooglePlaces {
 
 	private static final String PLACES_SEARCH_URL = "maps.googleapis.com";
@@ -65,6 +71,10 @@ public class GooglePlaces {
 		.appendQueryParameter("key", PropertiesUtil.getProperty(context, "API_KEY"))
 		.appendQueryParameter("location", location.getLatitude() + "," + location.getLongitude())
 		.appendQueryParameter("radius", String.valueOf(radius))
+		
+		// FIXME 
+		// Recupérer tous les types depuis PlaceType et non pas le fichier de properties
+		// Parcourir tous les types et avec un Stringbuilder intercaler des | entre chaque, puis supprimer le dernier caractère qui est un "|"
 		.appendQueryParameter("types", PropertiesUtil.getProperty(context, "types"))
 		.appendQueryParameter("sensor", String.valueOf(true))
 		.build();
@@ -104,9 +114,8 @@ public class GooglePlaces {
 			place.setReference(json.getString("reference"));
 
 			String types = json.getString("types");
-			types = types.replace("[", "");
-			types= types.replace("]", "");
-			place.setTypes(new ArrayList(Arrays.asList(types)));
+			types = types.replaceAll("[\\[\\]\"]", "");
+			place.setTypes(new ArrayList(Arrays.asList(types.split(","))));
 
 			JSONObject geometry = json.getJSONObject("geometry");
 			JSONObject location = geometry.getJSONObject("location");

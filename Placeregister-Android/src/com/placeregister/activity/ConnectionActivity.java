@@ -22,8 +22,7 @@ public class ConnectionActivity extends Activity {
 		textViewInternet.setText(hasInternet);
 
 		String hasGPSEnabled = (ConnectionUtils.hasGPSEnabled(this)) ? "Your GPS is enabled" : "Please enable your GPS";
-		// TODO
-		// POPUP local settings Activity to activate GPS 
+		// TODO : POPUP local settings Activity to activate GPS 
 		TextView textViewGPS = (TextView)findViewById(R.id.hasGPSEnabled);
 		textViewGPS.setText(hasGPSEnabled);
 

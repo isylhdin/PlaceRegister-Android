@@ -1,6 +1,8 @@
 package com.placeregister.places;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Place {
 	
@@ -74,5 +76,5 @@ public class Place {
 	public void setLongitude(double longitute) {
 		this.longitute = longitute;
 	}
-	
+
 }
