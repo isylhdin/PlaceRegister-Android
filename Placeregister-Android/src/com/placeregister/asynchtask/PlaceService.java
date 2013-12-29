@@ -2,11 +2,23 @@ package com.placeregister.asynchtask;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.Activity;
+import android.location.Location;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -14,10 +26,11 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.placeregister.R;
-import com.placeregister.places.GooglePlaces;
 import com.placeregister.places.Place;
 import com.placeregister.places.PlaceParam;
 import com.placeregister.places.PlaceType;
+import com.placeregister.utils.PropertiesUtil;
+import com.placeregister.utils.TypesUtil;
 
 /**
  * Retrieve places in background and display them on the map 
@@ -27,11 +40,6 @@ import com.placeregister.places.PlaceType;
 public class PlaceService extends AsyncTask<PlaceParam, String, List<Place>>{
 
 	/**
-	 * Google places object
-	 */
-	private GooglePlaces googlePlaces;
-	
-	/**
 	 * Main activity context
 	 */
 	private Activity activity;
@@ -40,21 +48,24 @@ public class PlaceService extends AsyncTask<PlaceParam, String, List<Place>>{
 	 * Interesting place types contained in PlaceType Enum class
 	 */
 	private List<String> existingTypes;
+	
+	/**
+	 * Google places web service url
+	 */
+	private static final String PLACES_SEARCH_URL = "maps.googleapis.com";
 
 	/**
-	 * Consumme Google map webservice to retrieve interesting places around the user
+	 * Consume Google map webservice to retrieve interesting places around the user
 	 */
 	@Override
 	protected List<Place> doInBackground(PlaceParam... arg) {
 		List<Place> places = new ArrayList<Place>();
 		try {
 			activity = arg[0].getActivityContext();
-			googlePlaces = new GooglePlaces(activity.getApplicationContext());
-			places = googlePlaces.searchPlaces(arg[0].getLocation(), arg[0].getRadius());
+			places = searchPlaces(arg[0].getLocation(), arg[0].getRadius());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 		return places;
 	}
 
@@ -72,7 +83,7 @@ public class PlaceService extends AsyncTask<PlaceParam, String, List<Place>>{
 		
 		for(Place place : result){
 			
-			float color = getColor(place.getTypes());
+			float color = TypesUtil.getColor(place.getTypes(), existingTypes);
 			
 			LatLng coord = new LatLng(place.getLatitude(), place.getLongitute());
 			mMap.addMarker(new MarkerOptions()
@@ -84,49 +95,96 @@ public class PlaceService extends AsyncTask<PlaceParam, String, List<Place>>{
 	}
 	
 	
-	// TODO move these function into another utility class
-	
 	/**
-	 * Returns the color to display for a place, giving its different types
-	 * @param types Different types belonging to a place
-	 * @return a color (as a float)
+	 * POST request to google places web service, in order to retrieve interesting places around user
+	 * @param location of user
+	 * @param radius. The distance between user and the limit where we want places to display
+	 * @return List of places we want to display on the map
+	 * @throws Exception
 	 */
-	public float getColor(List<String> types) {
-		List<PlaceType> colors = new ArrayList<PlaceType>();
+	public List<Place> searchPlaces(Location location, double radius)
+			throws Exception {
+
+		List<Place> places = new ArrayList<Place>();
+		List<String> types = PlaceType.getTypes();
 		
-		for (String type : types) {
-			if(existingTypes.contains(type)){
-				colors.add(PlaceType.getPlaceByType(type));
+		Uri uri = new Uri.Builder()
+		.scheme("https")
+		.authority(PLACES_SEARCH_URL)
+		.path("maps/api/place/search/json")
+		.appendQueryParameter("key", PropertiesUtil.getProperty(activity, "API_KEY"))
+		.appendQueryParameter("location", location.getLatitude() + "," + location.getLongitude())
+		.appendQueryParameter("radius", String.valueOf(radius))
+		.appendQueryParameter("types", appendTypes(types))
+		.appendQueryParameter("sensor", String.valueOf(true))
+		.build();
+
+		HttpClient httpclient = new DefaultHttpClient();
+		HttpGet httpget = new HttpGet(uri.toString()); 
+
+		try {
+			HttpResponse response = httpclient.execute(httpget);
+			final int statusCode = response.getStatusLine().getStatusCode();
+			if (statusCode != HttpStatus.SC_OK) {
+				Log.e("Status Code", "Bad status code" + statusCode);
+				return null;
 			}
+			places = getPlacesFromJSON(EntityUtils.toString(response.getEntity()));
+		}catch(Exception e){
+			e.printStackTrace();
 		}
+		return places;
+	}
+
+	/**
+	 * Convert the JSON object returned by the google web service into a list of Places
+	 * @param httpResult
+	 * @return
+	 * @throws JSONException
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public List<Place> getPlacesFromJSON(String httpResult) throws JSONException{
+
+		List<Place> places = new ArrayList<Place>();
+
+		JSONObject placesObject = new JSONObject(httpResult);
+		JSONArray placesArray = (JSONArray) placesObject.get("results");
 		
-		float color;
-		if (colors.size() == 1){
-			color = colors.get(0).getColor();
-		} else {
-			color = getColorOfPlaceGivingMaxPoint(colors);
+		for(int i=0; i<placesArray.length(); i++) {
+			JSONObject json = placesArray.getJSONObject(i);
+			Place place = new Place();
+			place.setName(json.getString("name"));
+			place.setReference(json.getString("reference"));
+
+			String types = json.getString("types");
+			types = types.replaceAll("[\\[\\]\"]", "");
+			place.setTypes(new ArrayList(Arrays.asList(types.split(","))));
+
+			JSONObject geometry = json.getJSONObject("geometry");
+			JSONObject location = geometry.getJSONObject("location");
+			place.setLatitude((Double) location.get("lat"));
+			place.setLongitude((Double) location.get("lng"));
+
+			places.add(place);
 		}
-		
-		return color;
+		return places;
 	}
 	
-	
 	/**
-	 * Returns the type's color giving the maximum amount of point in the list.
-	 *
-	 * @param different types returned by google map web services. A place can have several types
-	 * @return the max element
+	 * Append all types with | between them.
+	 * 
+	 * @param types
+	 * @return
 	 */
-	public static float getColorOfPlaceGivingMaxPoint(List<PlaceType> places){
-		Iterator<PlaceType> typeIterator = places.iterator();
-		PlaceType candidate = typeIterator.next();
-
-		while (typeIterator.hasNext() ){
-			PlaceType next = typeIterator.next();
-			if (next.getPoints() > candidate.getPoints()){
-				candidate = next;
-			}
+	private String appendTypes(List<String> types){
+		StringBuilder allTypes = new StringBuilder();
+		
+		String prefix = "";
+		for (String type : types) {
+			allTypes.append(prefix);
+			prefix = "|";
+			allTypes.append(type);
 		}
-		return candidate.getColor();
+		return allTypes.toString();
 	}
 }

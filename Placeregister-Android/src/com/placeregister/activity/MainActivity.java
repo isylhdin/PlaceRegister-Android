@@ -30,7 +30,6 @@ GooglePlayServicesClient.ConnectionCallbacks,
 GooglePlayServicesClient.OnConnectionFailedListener,
 LocationListener 
 {
-
 	// Milliseconds per second
 	private static final int MILLISECONDS_PER_SECOND = 500;
 	// Update frequency in seconds
@@ -51,7 +50,6 @@ LocationListener
 	private LocationClient mLocationClient;
 	private LocationRequest mLocationRequest;
 	private LocationManager locationManager;
-
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -123,7 +121,6 @@ LocationListener
 
 		mMap.moveCamera(center);
 		mMap.animateCamera(zoom);
-
 	}
 
 	public void onLocationChanged(Location location) {
@@ -152,12 +149,9 @@ LocationListener
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-			
-
 				setPositionOnMap(location, zoomLevel);
 			}
 		}
-
 	}
 
 	public void onDisconnected() {
