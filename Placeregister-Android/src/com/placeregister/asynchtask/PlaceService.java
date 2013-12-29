@@ -85,11 +85,13 @@ public class PlaceService extends AsyncTask<PlaceParam, String, List<Place>>{
 			
 			float color = TypesUtil.getColor(place.getTypes(), existingTypes);
 			
+			place.removeUnsupportedTypes();
+			
 			LatLng coord = new LatLng(place.getLatitude(), place.getLongitute());
 			mMap.addMarker(new MarkerOptions()
 			.position(coord)
 			.title(place.getName())
-			.snippet(place.getTypes().toString())
+			.snippet(place.getTypes().toString() + " : " + TypesUtil.getMaxEarnablePoint(place.getTypes())+ " points")
 			.icon(BitmapDescriptorFactory.defaultMarker(color)));
 		}
 	}

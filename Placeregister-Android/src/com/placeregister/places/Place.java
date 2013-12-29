@@ -1,14 +1,13 @@
 package com.placeregister.places;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Place {
 	
 	private String name;
 	private String reference;
-	private ArrayList<String> types;
+	private List<String> types;
 	private double latitude;
 	private double longitute;
 
@@ -26,7 +25,19 @@ public class Place {
 		this.latitude = latitude;
 		this.longitute = longitute;
 	}
-
+	
+	public void removeUnsupportedTypes(){
+		List<String> authorizedTypes = PlaceType.getTypes();
+		List<String> types = this.types;
+		List<String> usedTypes = new ArrayList<String>();
+		
+		for (String type : types) {
+			if (authorizedTypes.contains(type)) {
+				usedTypes.add(type);
+			}
+		}
+		this.types = usedTypes;
+	}
 
 	public String getName() {
 		return name;
@@ -48,12 +59,12 @@ public class Place {
 	}
 
 
-	public ArrayList<String> getTypes() {
+	public List<String> getTypes() {
 		return types;
 	}
 
 
-	public void setTypes(ArrayList<String> types) {
+	public void setTypes(List<String> types) {
 		this.types = types;
 	}
 

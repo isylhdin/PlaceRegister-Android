@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.placeregister.places.Place;
 import com.placeregister.places.PlaceType;
 
 public class TypesUtil {
@@ -51,5 +52,23 @@ public class TypesUtil {
 			}
 		}
 		return candidate.getColor();
+	}
+	
+	/**
+	 * Returns the maximum point in the list.
+	 *
+	 * @param different types returned by google map web services. A place can have several types
+	 * @return the max element
+	 */
+	public static int getMaxEarnablePoint(List<String> types){
+		int maxPoint = 0;
+		
+		for (String type : types) {
+			PlaceType place = PlaceType.getPlaceByType(type);
+			if (place.getPoints() > maxPoint){
+				maxPoint = place.getPoints();
+			}
+		}
+		return maxPoint;
 	}
 }
