@@ -1,5 +1,9 @@
 package com.placeregister.places;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
 public enum PlaceType {
@@ -37,6 +41,14 @@ public enum PlaceType {
 			}
 		}
 		return null;
+	}
+	
+	public static List<String> getTypes() {
+		List<String> types = new ArrayList<String>();
+		for (PlaceType place : Arrays.asList(PlaceType.values())) {
+			types.add(place.getType());
+		}
+		return types;
 	}
 
 }

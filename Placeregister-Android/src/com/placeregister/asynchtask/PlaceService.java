@@ -68,10 +68,7 @@ public class PlaceService extends AsyncTask<PlaceParam, String, List<Place>>{
 		GoogleMap mMap = ((MapFragment) activity.getFragmentManager().findFragmentById(R.id.map))
 				.getMap();
 		
-		existingTypes = new ArrayList<String>();
-		for (PlaceType place : Arrays.asList(PlaceType.values())) {
-			existingTypes.add(place.getType());
-		}
+		existingTypes = PlaceType.getTypes();
 		
 		for(Place place : result){
 			

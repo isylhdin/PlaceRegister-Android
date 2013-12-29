@@ -37,33 +37,19 @@ public class GooglePlaces {
 		this.context = context;
 	}
 
-//	private String buildURL(Location location, double radius) throws UnsupportedEncodingException{
-//		StringBuilder url = new StringBuilder(PLACES_SEARCH_URL);
-//		url.append("key=" + PropertiesUtil.getProperty(context, "API_KEY"));
-//		url.append("&");
-//		url.append("location=" + location.getLatitude() + "," + location.getLongitude());
-//		url.append("&");
-//		url.append("radius=" + radius); // in meters.
-//		url.append("&");
-//		url.append("types=" + URLEncoder.encode(PropertiesUtil.getProperty(context, "types"),"UTF-8"));
-//		url.append("&");
-//		url.append("sensor=true");
-//
-//		return url.toString();
-//	}
-
 	/**
-	 * 
-	 * @param location
-	 * @param radius
-	 * @return
+	 * POST request to google places web service, in order to retrieve interesting places around user
+	 * @param location of user
+	 * @param radius. The distance between user and the limit where we want places to display
+	 * @return List of places we want to display on the map
 	 * @throws Exception
 	 */
 	public List<Place> searchPlaces(Location location, double radius)
 			throws Exception {
 
 		List<Place> places = new ArrayList<Place>();
-
+		List<String> types = PlaceType.getTypes();
+		
 		Uri uri = new Uri.Builder()
 		.scheme("https")
 		.authority(PLACES_SEARCH_URL)
@@ -71,11 +57,7 @@ public class GooglePlaces {
 		.appendQueryParameter("key", PropertiesUtil.getProperty(context, "API_KEY"))
 		.appendQueryParameter("location", location.getLatitude() + "," + location.getLongitude())
 		.appendQueryParameter("radius", String.valueOf(radius))
-		
-		// FIXME 
-		// Recupérer tous les types depuis PlaceType et non pas le fichier de properties
-		// Parcourir tous les types et avec un Stringbuilder intercaler des | entre chaque, puis supprimer le dernier caractère qui est un "|"
-		.appendQueryParameter("types", PropertiesUtil.getProperty(context, "types"))
+		.appendQueryParameter("types", appendTypes(types))
 		.appendQueryParameter("sensor", String.valueOf(true))
 		.build();
 
@@ -98,6 +80,12 @@ public class GooglePlaces {
 		return places;
 	}
 
+	/**
+	 * Convert the JSON object returned by the google web service into a list of Places
+	 * @param httpResult
+	 * @return
+	 * @throws JSONException
+	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public List<Place> getPlacesFromJSON(String httpResult) throws JSONException{
 
@@ -127,6 +115,22 @@ public class GooglePlaces {
 
 		return places;
 	}
-
-
+	
+	/**
+	 * Append all types with | between them.
+	 * 
+	 * @param types
+	 * @return
+	 */
+	private String appendTypes(List<String> types){
+		StringBuilder allTypes = new StringBuilder();
+		
+		String prefix = "";
+		for (String type : types) {
+			allTypes.append(prefix);
+			prefix = "|";
+			allTypes.append(type);
+		}
+		return allTypes.toString();
+	}
 }
