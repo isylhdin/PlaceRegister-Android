@@ -19,9 +19,11 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.placeregister.R;
-import com.placeregister.asynchtask.PlaceService;
+import com.placeregister.asynchtask.DisplayPlaceService;
 import com.placeregister.places.PlaceParam;
 
 public class MainActivity extends FragmentActivity 
@@ -124,6 +126,12 @@ LocationListener
 	}
 
 	public void onLocationChanged(Location location) {
+//		CircleOptions circleOptions = new CircleOptions()
+//	    .center(new LatLng(location.getLatitude(), location.getLongitude()))
+//	    .radius(1000);
+//		
+//		Circle circle = mMap.addCircle(circleOptions);
+
 	}
 
 	public void onConnectionFailed(ConnectionResult result) {
@@ -143,13 +151,14 @@ LocationListener
 				Toast t = Toast.makeText(this, "La position a été retrouvé à partir de LastKnownLocation", Toast.LENGTH_SHORT);
 				t.show();
 				
-				try {
-					PlaceParam params = new PlaceParam(this, location, radius);
-					new PlaceService().execute(params);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
 				setPositionOnMap(location, zoomLevel);
+			}
+			
+			try {
+				PlaceParam params = new PlaceParam(this, location, radius);
+				new DisplayPlaceService().execute(params);
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 	}

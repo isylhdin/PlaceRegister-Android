@@ -8,22 +8,24 @@ public class Place {
 	private String name;
 	private String reference;
 	private List<String> types;
+	private String address;
 	private double latitude;
-	private double longitute;
+	private double longitude;
 
 	
 	public Place() {
 	}
 
 
-	public Place(String name, String reference, ArrayList<String> types,
+	public Place(String name, String reference, ArrayList<String> types, String address,
 			double latitude, double longitute) {
 		super();
 		this.name = name;
 		this.reference = reference;
 		this.types = types;
+		this.address = address;
 		this.latitude = latitude;
-		this.longitute = longitute;
+		this.longitude = longitute;
 	}
 	
 	public void removeUnsupportedTypes(){
@@ -67,6 +69,15 @@ public class Place {
 	public void setTypes(List<String> types) {
 		this.types = types;
 	}
+	
+	public String getAddress() {
+		return address;
+	}
+
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
 
 
 	public double getLatitude() {
@@ -79,13 +90,14 @@ public class Place {
 	}
 
 
-	public double getLongitute() {
-		return longitute;
+	public double getLongitude() {
+		return longitude;
 	}
 
 
-	public void setLongitude(double longitute) {
-		this.longitute = longitute;
+	public void setLongitude(double longitude) {
+		this.longitude = longitude;
 	}
+
 
 }

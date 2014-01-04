@@ -2,12 +2,16 @@ package com.placeregister.asynchtask;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
@@ -19,11 +23,14 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.placeregister.R;
 import com.placeregister.places.Place;
@@ -37,22 +44,30 @@ import com.placeregister.utils.TypesUtil;
  * @author yoann
  *
  */
-public class PlaceService extends AsyncTask<PlaceParam, String, List<Place>>{
+public class DisplayPlaceService extends AsyncTask<PlaceParam, String, List<Place>>{
 
 	/**
 	 * Main activity context
 	 */
 	private Activity activity;
-	
+
 	/**
 	 * Interesting place types contained in PlaceType Enum class
 	 */
 	private List<String> existingTypes;
-	
+
 	/**
 	 * Google places web service url
 	 */
 	private static final String PLACES_SEARCH_URL = "maps.googleapis.com";
+
+	/**
+	 * Google map object
+	 */
+	private GoogleMap mMap;
+	
+	
+	private Map<Marker, Place> placeMap;
 
 	/**
 	 * Consume Google map webservice to retrieve interesting places around the user
@@ -76,27 +91,53 @@ public class PlaceService extends AsyncTask<PlaceParam, String, List<Place>>{
 	protected void onPostExecute(List<Place> result) {
 		super.onPostExecute(result);
 
-		GoogleMap mMap = ((MapFragment) activity.getFragmentManager().findFragmentById(R.id.map))
-				.getMap();
-		
+		mMap = ((MapFragment) activity.getFragmentManager().findFragmentById(R.id.map)).getMap();
 		existingTypes = PlaceType.getTypes();
-		
+		placeMap = new HashMap<Marker, Place>();
+
 		for(Place place : result){
-			
-			float color = TypesUtil.getColor(place.getTypes(), existingTypes);
-			
 			place.removeUnsupportedTypes();
-			
-			LatLng coord = new LatLng(place.getLatitude(), place.getLongitute());
-			mMap.addMarker(new MarkerOptions()
-			.position(coord)
-			.title(place.getName())
-			.snippet(place.getTypes().toString() + " : " + TypesUtil.getMaxEarnablePoint(place.getTypes())+ " points")
-			.icon(BitmapDescriptorFactory.defaultMarker(color)));
+			addMarker(place);
 		}
 	}
-	
-	
+
+	/**
+	 * Construct a marker for a given place
+	 * @param place
+	 */
+	public void addMarker(Place place){
+		float color = TypesUtil.getColor(place.getTypes(), existingTypes);
+
+		LatLng coord = new LatLng(place.getLatitude(), place.getLongitude());
+		Marker currentMarker = mMap.addMarker(new MarkerOptions()
+		.position(coord)
+		.title(place.getName())
+		.snippet(place.getTypes().toString() + " : " + TypesUtil.getMaxEarnablePoint(place.getTypes())+ " points")
+		.icon(BitmapDescriptorFactory.defaultMarker(color)));
+
+		placeMap.put(currentMarker, place);
+		addMarkerListener(currentMarker);
+
+	}
+
+	/**
+	 * Add a listener on the marker window info
+	 * @param marker
+	 * @param place
+	 */
+	public void addMarkerListener(Marker marker){
+		mMap.setOnInfoWindowClickListener(
+				new OnInfoWindowClickListener(){
+					public void onInfoWindowClick(Marker marker){
+						Toast t = Toast.makeText(activity, "Click info : " + marker.getTitle(), Toast.LENGTH_SHORT);
+						t.show();
+						
+						new RegisterUserPlaceService().execute(placeMap.get(marker));
+					}
+				}
+				);
+	}
+
 	/**
 	 * POST request to google places web service, in order to retrieve interesting places around user
 	 * @param location of user
@@ -109,7 +150,7 @@ public class PlaceService extends AsyncTask<PlaceParam, String, List<Place>>{
 
 		List<Place> places = new ArrayList<Place>();
 		List<String> types = PlaceType.getTypes();
-		
+
 		Uri uri = new Uri.Builder()
 		.scheme("https")
 		.authority(PLACES_SEARCH_URL)
@@ -151,12 +192,13 @@ public class PlaceService extends AsyncTask<PlaceParam, String, List<Place>>{
 
 		JSONObject placesObject = new JSONObject(httpResult);
 		JSONArray placesArray = (JSONArray) placesObject.get("results");
-		
+
 		for(int i=0; i<placesArray.length(); i++) {
 			JSONObject json = placesArray.getJSONObject(i);
 			Place place = new Place();
 			place.setName(json.getString("name"));
 			place.setReference(json.getString("reference"));
+			place.setAddress(json.getString("vicinity"));
 
 			String types = json.getString("types");
 			types = types.replaceAll("[\\[\\]\"]", "");
@@ -171,7 +213,7 @@ public class PlaceService extends AsyncTask<PlaceParam, String, List<Place>>{
 		}
 		return places;
 	}
-	
+
 	/**
 	 * Append all types with | between them.
 	 * 
@@ -180,7 +222,7 @@ public class PlaceService extends AsyncTask<PlaceParam, String, List<Place>>{
 	 */
 	private String appendTypes(List<String> types){
 		StringBuilder allTypes = new StringBuilder();
-		
+
 		String prefix = "";
 		for (String type : types) {
 			allTypes.append(prefix);
