@@ -10,8 +10,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
@@ -197,7 +195,7 @@ public class DisplayPlaceService extends AsyncTask<PlaceParam, String, List<Plac
 			JSONObject json = placesArray.getJSONObject(i);
 			Place place = new Place();
 			place.setName(json.getString("name"));
-			place.setReference(json.getString("reference"));
+			place.setId(json.getString("id"));
 			place.setAddress(json.getString("vicinity"));
 
 			String types = json.getString("types");

@@ -6,7 +6,7 @@ import java.util.List;
 public class Place {
 	
 	private String name;
-	private String reference;
+	private String id;
 	private List<String> types;
 	private String address;
 	private double latitude;
@@ -17,11 +17,11 @@ public class Place {
 	}
 
 
-	public Place(String name, String reference, ArrayList<String> types, String address,
+	public Place(String name, String id, ArrayList<String> types, String address,
 			double latitude, double longitute) {
 		super();
 		this.name = name;
-		this.reference = reference;
+		this.id = id;
 		this.types = types;
 		this.address = address;
 		this.latitude = latitude;
@@ -51,13 +51,13 @@ public class Place {
 	}
 
 
-	public String getReference() {
-		return reference;
+	public String getId() {
+		return id;
 	}
 
 
-	public void setReference(String reference) {
-		this.reference = reference;
+	public void setId(String id) {
+		this.id = id;
 	}
 
 
