@@ -31,9 +31,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.placeregister.R;
+import com.placeregister.constants.PlaceConstant;
 import com.placeregister.places.Place;
-import com.placeregister.places.PlaceParam;
 import com.placeregister.places.PlaceType;
+import com.placeregister.search.parameters.SearchGooglePlaceParam;
 import com.placeregister.utils.PropertiesUtil;
 import com.placeregister.utils.TypesUtil;
 
@@ -42,7 +43,7 @@ import com.placeregister.utils.TypesUtil;
  * @author yoann
  *
  */
-public class DisplayPlaceService extends AsyncTask<PlaceParam, String, List<Place>>{
+public class DisplayPlaceService extends AsyncTask<SearchGooglePlaceParam, String, List<Place>>{
 
 	/**
 	 * Main activity context
@@ -53,11 +54,6 @@ public class DisplayPlaceService extends AsyncTask<PlaceParam, String, List<Plac
 	 * Interesting place types contained in PlaceType Enum class
 	 */
 	private List<String> existingTypes;
-
-	/**
-	 * Google places web service url
-	 */
-	private static final String PLACES_SEARCH_URL = "maps.googleapis.com";
 
 	/**
 	 * Google map object
@@ -71,7 +67,7 @@ public class DisplayPlaceService extends AsyncTask<PlaceParam, String, List<Plac
 	 * Consume Google map webservice to retrieve interesting places around the user
 	 */
 	@Override
-	protected List<Place> doInBackground(PlaceParam... arg) {
+	protected List<Place> doInBackground(SearchGooglePlaceParam... arg) {
 		List<Place> places = new ArrayList<Place>();
 		try {
 			activity = arg[0].getActivityContext();
@@ -151,7 +147,7 @@ public class DisplayPlaceService extends AsyncTask<PlaceParam, String, List<Plac
 
 		Uri uri = new Uri.Builder()
 		.scheme("https")
-		.authority(PLACES_SEARCH_URL)
+		.authority(PlaceConstant.PLACES_SEARCH_URL)
 		.path("maps/api/place/search/json")
 		.appendQueryParameter("key", PropertiesUtil.getProperty(activity, "API_KEY"))
 		.appendQueryParameter("location", location.getLatitude() + "," + location.getLongitude())

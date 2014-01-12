@@ -1,20 +1,20 @@
-package com.placeregister.places;
+package com.placeregister.search.parameters;
 
 import android.app.Activity;
 import android.location.Location;
 
-public class PlaceParam {
+public class SearchGooglePlaceParam {
 	
 	private Activity activityContext;
 	private Location location;
 	private double radius;
 	
-	public PlaceParam() {
+	public SearchGooglePlaceParam() {
 		super();
 	}
 	
 
-	public PlaceParam(Activity activityContext, Location location, double radius) {
+	public SearchGooglePlaceParam(Activity activityContext, Location location, double radius) {
 		super();
 		this.activityContext = activityContext;
 		this.location = location;

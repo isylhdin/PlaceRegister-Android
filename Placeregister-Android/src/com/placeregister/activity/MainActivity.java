@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -19,12 +18,12 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.placeregister.R;
 import com.placeregister.asynchtask.DisplayPlaceService;
-import com.placeregister.places.PlaceParam;
+import com.placeregister.asynchtask.GetVisitedPlacesService;
+import com.placeregister.search.parameters.SearchBDPlaceParam;
+import com.placeregister.search.parameters.SearchGooglePlaceParam;
 
 public class MainActivity extends FragmentActivity 
 implements
@@ -32,22 +31,41 @@ GooglePlayServicesClient.ConnectionCallbacks,
 GooglePlayServicesClient.OnConnectionFailedListener,
 LocationListener 
 {
-	// Milliseconds per second
+	/**
+	 * Milliseconds per second
+	 */
 	private static final int MILLISECONDS_PER_SECOND = 500;
-	// Update frequency in seconds
+	
+	/**
+	 * Update frequency in seconds
+	 */
 	public static final int UPDATE_INTERVAL_IN_SECONDS = 5;
-	// Update frequency in milliseconds
+	
+	/**
+	 * Update frequency in milliseconds
+	 */
 	private static final long UPDATE_INTERVAL =
 			MILLISECONDS_PER_SECOND * UPDATE_INTERVAL_IN_SECONDS;
-	// The fastest update frequency, in seconds
+	
+	/**
+	 *  The fastest update frequency, in seconds
+	 */
 	private static final int FASTEST_INTERVAL_IN_SECONDS = 1;
-	// A fast frequency ceiling in milliseconds
+	
+	/**
+	 *  A fast frequency ceiling in milliseconds
+	 */
 	private static final long FASTEST_INTERVAL =
 			MILLISECONDS_PER_SECOND * FASTEST_INTERVAL_IN_SECONDS;
 
+	private static final int ZOOM_LEVEL = 14;
+	
+	/**
+	 * Distance from where we want to retrieve places according to user's position
+	 */
+	private static final int RADIUS = 2000;
+	
 	private GoogleMap mMap;
-	private final int zoomLevel = 14;
-	private final int radius = 2000;
 
 	private LocationClient mLocationClient;
 	private LocationRequest mLocationRequest;
@@ -148,15 +166,16 @@ LocationListener
 			if (location == null) {
 				mLocationClient.requestLocationUpdates(mLocationRequest, this);
 			} else {
-				Toast t = Toast.makeText(this, "La position a été retrouvé à partir de LastKnownLocation", Toast.LENGTH_SHORT);
-				t.show();
-				
-				setPositionOnMap(location, zoomLevel);
+				setPositionOnMap(location, ZOOM_LEVEL);
 			}
 			
 			try {
-				PlaceParam params = new PlaceParam(this, location, radius);
-				new DisplayPlaceService().execute(params);
+				SearchGooglePlaceParam googleParams = new SearchGooglePlaceParam(this, location, RADIUS);
+				new DisplayPlaceService().execute(googleParams);
+				
+				// FIXME replace user tag stub
+				SearchBDPlaceParam bdParams = new SearchBDPlaceParam("nickname1#241113", location);
+				new GetVisitedPlacesService().execute(bdParams);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
