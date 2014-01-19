@@ -2,7 +2,16 @@ package com.placeregister.constants;
 
 public class PlaceConstant {
 
+	/**
+	 * Raspberry local jetty server url. Another context is added by default (ie war's name)
+	 */
+	private static final String BACK_END_RASPBERRY_LOCAL_URL = "http://192.168.0.11:8080/Placeregister-backend-0.0.1-SNAPSHOT/rest/place/service/";
+	
+	/**
+	 * Embedded jetty server launched with maven/eclipse
+	 */
 	private static final String BACK_END_URL = "http://192.168.0.4:8080/rest/place/service/";
+	
 	/**
 	 * Google places web service url
 	 */

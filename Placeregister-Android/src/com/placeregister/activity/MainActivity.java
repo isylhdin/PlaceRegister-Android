@@ -173,7 +173,7 @@ LocationListener
 				SearchGooglePlaceParam googleParams = new SearchGooglePlaceParam(this, location, RADIUS);
 				new DisplayPlaceService().execute(googleParams);
 				
-				// FIXME replace user tag stub
+				// FIXME : replace user tag stub
 				SearchBDPlaceParam bdParams = new SearchBDPlaceParam("nickname1#241113", location);
 				new GetVisitedPlacesService().execute(bdParams);
 			} catch (Exception e) {

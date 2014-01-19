@@ -41,7 +41,7 @@ public class RegisterUserPlaceService extends
 	/**
 	 * POST request to add a new place to DataBase
 	 * @param place
-	 * @return TODO
+	 * @return the new place id
 	 */
 	public String addPlace(Place place){
 
