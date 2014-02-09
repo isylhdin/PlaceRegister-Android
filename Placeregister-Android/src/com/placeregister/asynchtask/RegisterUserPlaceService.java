@@ -62,7 +62,7 @@ public class RegisterUserPlaceService extends
 			params.put("latitude", String.valueOf(place.getLatitude()));
 			
 			// FIXME : Stub to transmit user info
-			params.put("tag", "nickname1#241113");
+			params.put("tag", "nickname2#241113");
 			
 			JSONObject holder = new JSONObject(params);
 

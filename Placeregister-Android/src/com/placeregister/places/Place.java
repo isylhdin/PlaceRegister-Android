@@ -18,14 +18,14 @@ public class Place {
 
 
 	public Place(String name, String id, ArrayList<String> types, String address,
-			double latitude, double longitute) {
+			double latitude, double longitude) {
 		super();
 		this.name = name;
 		this.id = id;
 		this.types = types;
 		this.address = address;
 		this.latitude = latitude;
-		this.longitude = longitute;
+		this.longitude = longitude;
 	}
 	
 	public void removeUnsupportedTypes(){

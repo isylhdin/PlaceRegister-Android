@@ -10,7 +10,7 @@ public class PlaceConstant {
 	/**
 	 * Embedded jetty server launched with maven/eclipse
 	 */
-	private static final String BACK_END_URL = "http://192.168.0.4:8080/rest/place/service/";
+	private static final String BACK_END_URL = "http://192.168.0.7:8080/rest/place/service/";
 	
 	/**
 	 * Google places web service url
