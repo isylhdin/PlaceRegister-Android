@@ -35,6 +35,7 @@ import com.placeregister.constants.PlaceConstant;
 import com.placeregister.places.Place;
 import com.placeregister.places.PlaceType;
 import com.placeregister.places.VisitedPlace;
+import com.placeregister.search.parameters.PlaceMarkerParam;
 import com.placeregister.search.parameters.SearchBDPlaceParam;
 import com.placeregister.utils.TypesUtil;
 
@@ -215,6 +216,10 @@ public class GetVisitedPlacesService extends
 	private void addVisitedPlaceMarker(VisitedPlace visitedPlace) {
 		LatLng coord = new LatLng(visitedPlace.getLatitude(),
 				visitedPlace.getLongitude());
+
+		int markerResourceId = TypesUtil.getVisitedMarkerTypeId(visitedPlace
+				.getTypes());
+
 		Marker currentMarker = mMap.addMarker(new MarkerOptions()
 				.position(coord)
 				.title(visitedPlace.getName())
@@ -223,8 +228,7 @@ public class GetVisitedPlacesService extends
 								+ " : "
 								+ TypesUtil.getMaxEarnablePoint(visitedPlace
 										.getTypes()) + " points")
-				.icon(BitmapDescriptorFactory
-						.defaultMarker(BitmapDescriptorFactory.HUE_ROSE)));
+				.icon(BitmapDescriptorFactory.fromResource(markerResourceId)));
 
 		placeMap.put(currentMarker, visitedPlace);
 		addMarkerListener(currentMarker);
@@ -246,9 +250,11 @@ public class GetVisitedPlacesService extends
 
 				// TODO recuperer l'heure de la place et ensuite envoyer la
 				// requête pour enregistrer l'endroit
-				// new GetTimeService().execute(placeMap.get(marker));
+				PlaceMarkerParam markerParam = new PlaceMarkerParam(marker,
+						placeMap.get(marker), null);
+				new GetTimeService().execute(markerParam);
 
-				new RegisterUserPlaceService().execute(placeMap.get(marker));
+				// new RegisterUserPlaceService().execute(markerParam);
 			}
 		});
 	}
