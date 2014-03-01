@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">test</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_connection">ConnectionActivity</string>
+    <string name="connection">Connection</string>
+    
+    <!-- SUCCES -->
+    <string name="status_200">Le lieu a été ajouté avec succès</string>
+    
+    <!-- AQUARIUM -->
+    <string name="status_5000">Vous avez epuisé votre quota d\'aquarium pour aujourd\'hui</string>
+     
+    <!-- ART -->
+    <string name="status_5010">Vous avez epuisé votre quota de galerie d\'art pour aujourd\'hui</string>
+    
+	<!-- BAR -->
+    <string name="status_5020">Vous avez déjà été dans ce bar aujourd\'hui</string>
+    <string name="status_5021">Il est trop tôt pour aller dans un bar</string>
+    <string name="status_5022">Vous avez atteint votre quota de bar pour ce début d\'après midi</string>
+     
+    <!-- CAFE -->
+    <string name="status_5030">Vous ne pouvez pas enregistrer de café pour l\'instant</string>
+    
+    <!-- CAMPING -->
+    <string name="status_5040">Vous avez epuisé votre quota de camping pour aujourd\'hui</string>
+    
+    <!-- CASINO -->
+    <string name="status_5050">Vous avez epuisé votre quota de casino pour aujourd\'hui</string>
+    
+    <!-- GYM -->
+    <string name="status_5060">Vous avez epuisé votre quota de "Gym" pour aujourd\'hui</string>
+    <string name="status_5061">Vous ne pouvez pas aller dans plusieurs établissements de type "Gym" par jour</string>
+    
+    <!-- MOVIE THEATER -->
+    <string name="status_5070">Vous devez attendre avant d\'enregistrer un nouveau cinéma</string>
+   
+    <!-- MUSEUM -->
+    <string name="status_5080">Vous devez attendre avant d\'enregistrer un nouveau musée</string>
+    
+    <!-- NIGHT CLUB -->
+    <string name="status_5090">Il est trop tôt pour enregistrer une boite de nuit</string>
+    <string name="status_5091">Vous avez déjà enregistré cette boite de nuit aujourd\'hui</string>
+    
+    <!-- PARK -->
+    <string name="status_5100">Vous devez attendre avant d\'enregistrer un nouveau parc</string>
+    <string name="status_5101">Vous avez déjà enregistré ce parc aujourd\'hui</string>
+    
+    <!-- RESTAURANT -->
+    <string name="status_5110">Vous ne pouvez pas enregistrer de restaurant pour l\'instant</string>
+    
+    <!-- STADIUM -->
+    <string name="status_5120">Vous ne pouvez pas enregistrer de stade pour l\'instant</string>
+    
+    <!-- ZOO -->
+    <string name="status_5130">Vous ne pouvez pas enregistrer de zoo pour l\'instant</string>
+    
+
+</resources>

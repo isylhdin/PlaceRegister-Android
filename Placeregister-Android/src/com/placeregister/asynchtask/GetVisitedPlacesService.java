@@ -21,7 +21,6 @@ import android.app.Activity;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
@@ -244,17 +243,12 @@ public class GetVisitedPlacesService extends
 	public void addMarkerListener(Marker marker) {
 		mMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
 			public void onInfoWindowClick(Marker marker) {
-				Toast t = Toast.makeText(activity,
-						"Click info : " + marker.getTitle(), Toast.LENGTH_SHORT);
-				t.show();
 
-				// TODO recuperer l'heure de la place et ensuite envoyer la
-				// requête pour enregistrer l'endroit
+				// Sends a request to the server to register the visit
 				PlaceMarkerParam markerParam = new PlaceMarkerParam(marker,
-						placeMap.get(marker), null);
+						placeMap.get(marker), null, activity);
 				new GetTimeService().execute(markerParam);
 
-				// new RegisterUserPlaceService().execute(markerParam);
 			}
 		});
 	}

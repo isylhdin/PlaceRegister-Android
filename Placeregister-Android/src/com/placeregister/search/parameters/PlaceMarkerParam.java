@@ -1,5 +1,7 @@
 package com.placeregister.search.parameters;
 
+import android.app.Activity;
+
 import com.google.android.gms.maps.model.Marker;
 import com.placeregister.places.Place;
 
@@ -8,16 +10,19 @@ public class PlaceMarkerParam {
 	private Marker marker;
 	private Place place;
 	private String timeZone;
+	private Activity context;
 
 	public PlaceMarkerParam() {
 
 	}
 
-	public PlaceMarkerParam(Marker marker, Place place, String timeZone) {
+	public PlaceMarkerParam(Marker marker, Place place, String timeZone,
+			Activity context) {
 		super();
 		this.marker = marker;
 		this.place = place;
 		this.timeZone = timeZone;
+		this.context = context;
 	}
 
 	public Marker getMarker() {
@@ -42,6 +47,14 @@ public class PlaceMarkerParam {
 
 	public void setTimeZone(String timeZone) {
 		this.timeZone = timeZone;
+	}
+
+	public Activity getContext() {
+		return context;
+	}
+
+	public void setContext(Activity context) {
+		this.context = context;
 	}
 
 }

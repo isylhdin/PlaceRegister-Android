@@ -10,14 +10,16 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Marker;
+import com.placeregister.constants.AddPlaceStatusConstant;
 import com.placeregister.constants.PlaceConstant;
 import com.placeregister.places.Place;
 import com.placeregister.search.parameters.PlaceMarkerParam;
@@ -30,7 +32,7 @@ import com.placeregister.utils.TypesUtil;
  * 
  */
 public class RegisterUserPlaceService extends
-		AsyncTask<PlaceMarkerParam, String, String> {
+		AsyncTask<PlaceMarkerParam, String, Integer> {
 
 	/**
 	 * Marker represented on map
@@ -47,25 +49,34 @@ public class RegisterUserPlaceService extends
 	 */
 	private String timeZone;
 
+	/**
+	 * Calling activity
+	 */
+	private Activity activity;
+
 	@Override
-	protected String doInBackground(PlaceMarkerParam... placeMarkerParam) {
+	protected Integer doInBackground(PlaceMarkerParam... placeMarkerParam) {
 		this.marker = placeMarkerParam[0].getMarker();
 		this.place = placeMarkerParam[0].getPlace();
 		this.timeZone = placeMarkerParam[0].getTimeZone();
+		this.activity = placeMarkerParam[0].getContext();
 
 		return addPlace(place);
 	}
 
 	@Override
-	protected void onPostExecute(String placeId) {
-		super.onPostExecute(placeId);
+	protected void onPostExecute(Integer serverStatus) {
+		super.onPostExecute(serverStatus);
 
-		// Changes the marker icon to show that it's a visited place now
-		// TODO check server Response to know if it's a new visited place (0) /
-		// already visited place (1) / refused place (2)
-		// If the response is 0, then change the marker icon
-		int markerId = TypesUtil.getVisitedMarkerTypeId(place.getTypes());
-		marker.setIcon(BitmapDescriptorFactory.fromResource(markerId));
+		int resourceId = activity.getResources().getIdentifier(
+				"status_" + serverStatus, "string", activity.getPackageName());
+		Toast t = Toast.makeText(this.activity, resourceId, Toast.LENGTH_SHORT);
+		t.show();
+
+		if (AddPlaceStatusConstant.OK == serverStatus) {
+			int markerId = TypesUtil.getVisitedMarkerTypeId(place.getTypes());
+			marker.setIcon(BitmapDescriptorFactory.fromResource(markerId));
+		}
 
 	}
 
@@ -75,11 +86,10 @@ public class RegisterUserPlaceService extends
 	 * @param place
 	 * @return the new place id
 	 */
-	public String addPlace(Place place) {
+	public int addPlace(Place place) {
 
 		String url = PlaceConstant.ADD_PLACE_URL;
-		String id = null;
-		int statusCode = 0;
+		int applicationStatus = 0;
 
 		try {
 			HttpClient httpclient = new DefaultHttpClient();
@@ -101,27 +111,20 @@ public class RegisterUserPlaceService extends
 
 			StringEntity se = new StringEntity(holder.toString());
 			httppost.setEntity(se);
-			httppost.setHeader("Content-type", "application/json");
+			httppost.addHeader("Content-Type", "application/json");
+			httppost.addHeader("Accept", "application/json");
 
 			HttpResponse response = httpclient.execute(httppost);
-			statusCode = response.getStatusLine().getStatusCode();
+			int statusCode = response.getStatusLine().getStatusCode();
 			if (statusCode != HttpStatus.SC_OK) {
 				Log.e("Status Code", "Bad status code" + statusCode);
 			}
-			id = getId(EntityUtils.toString(response.getEntity()));
+
+			applicationStatus = Integer.valueOf(EntityUtils.toString(response
+					.getEntity()));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return id;
-	}
-
-	private String getId(String httpResult) {
-		try {
-			JSONObject placeObject = new JSONObject(httpResult);
-			return placeObject.getString("id");
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		return null;
+		return applicationStatus;
 	}
 }
