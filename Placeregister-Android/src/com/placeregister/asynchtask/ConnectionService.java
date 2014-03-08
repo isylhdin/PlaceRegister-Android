@@ -1,6 +1,6 @@
 package com.placeregister.asynchtask;
 
-import com.placeregister.activity.MainActivity;
+import com.placeregister.activity.MapActivity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -65,7 +65,7 @@ public class ConnectionService extends AsyncTask<Activity, String, Integer>{
 		t.show();
 		
 		if (result.equals(200)) {
-			Intent intent = new Intent(activity, MainActivity.class);
+			Intent intent = new Intent(activity, MapActivity.class);
 			activity.startActivity(intent);
 		}
 		 

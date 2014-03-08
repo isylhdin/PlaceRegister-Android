@@ -30,11 +30,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.placeregister.R;
-import com.placeregister.constants.PlaceConstant;
+import com.placeregister.activity.MapActivity;
+import com.placeregister.constants.URLConstant;
+import com.placeregister.dialog.SelectPlaceTypeDialog;
 import com.placeregister.places.Place;
 import com.placeregister.places.PlaceType;
 import com.placeregister.places.VisitedPlace;
-import com.placeregister.search.parameters.PlaceMarkerParam;
 import com.placeregister.search.parameters.SearchBDPlaceParam;
 import com.placeregister.utils.TypesUtil;
 
@@ -203,7 +204,7 @@ public class GetVisitedPlacesService extends
 				.icon(BitmapDescriptorFactory.defaultMarker(color)));
 
 		placeMap.put(currentMarker, place);
-		addMarkerListener(currentMarker);
+		addMarkerListener(currentMarker, place.getTypes());
 
 	}
 
@@ -230,7 +231,7 @@ public class GetVisitedPlacesService extends
 				.icon(BitmapDescriptorFactory.fromResource(markerResourceId)));
 
 		placeMap.put(currentMarker, visitedPlace);
-		addMarkerListener(currentMarker);
+		addMarkerListener(currentMarker, visitedPlace.getTypes());
 
 	}
 
@@ -240,15 +241,20 @@ public class GetVisitedPlacesService extends
 	 * @param marker
 	 * @param place
 	 */
-	public void addMarkerListener(Marker marker) {
+	public void addMarkerListener(Marker marker, final List<String> placeTypes) {
 		mMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
 			public void onInfoWindowClick(Marker marker) {
 
-				// Sends a request to the server to register the visit
-				PlaceMarkerParam markerParam = new PlaceMarkerParam(marker,
-						placeMap.get(marker), null, activity);
-				new GetTimeService().execute(markerParam);
-
+				// Fires dialog message to select a place type
+				SelectPlaceTypeDialog selectTypesFragment = new SelectPlaceTypeDialog();
+				selectTypesFragment.setPlaceTypes(placeMap.get(marker)
+						.getTypes());
+				selectTypesFragment.setPlaceMap(placeMap);
+				selectTypesFragment.setMarker(marker);
+				selectTypesFragment.setActivity(activity);
+				selectTypesFragment.show(
+						((MapActivity) activity).getSupportFragmentManager(),
+						"selectType");
 			}
 		});
 	}
@@ -262,7 +268,7 @@ public class GetVisitedPlacesService extends
 	 */
 	private List<VisitedPlace> searchVisitedPlaces(String userTag,
 			Location location) {
-		String url = PlaceConstant.GET_VISITED_PLACES_URL;
+		String url = URLConstant.GET_VISITED_PLACES_URL;
 		int statusCode = 0;
 		List<VisitedPlace> places = new ArrayList<VisitedPlace>();
 

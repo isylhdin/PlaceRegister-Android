@@ -21,45 +21,12 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.placeregister.R;
 import com.placeregister.asynchtask.GetGooglePlacesService;
+import com.placeregister.constants.MapConstant;
 import com.placeregister.search.parameters.SearchGooglePlaceParam;
 
-public class MainActivity extends FragmentActivity implements
+public class MapActivity extends FragmentActivity implements
 		GooglePlayServicesClient.ConnectionCallbacks,
 		GooglePlayServicesClient.OnConnectionFailedListener, LocationListener {
-	/**
-	 * Milliseconds per second
-	 */
-	private static final int MILLISECONDS_PER_SECOND = 500;
-
-	/**
-	 * Update frequency in seconds
-	 */
-	public static final int UPDATE_INTERVAL_IN_SECONDS = 5;
-
-	/**
-	 * Update frequency in milliseconds
-	 */
-	private static final long UPDATE_INTERVAL = MILLISECONDS_PER_SECOND
-			* UPDATE_INTERVAL_IN_SECONDS;
-
-	/**
-	 * The fastest update frequency, in seconds
-	 */
-	private static final int FASTEST_INTERVAL_IN_SECONDS = 1;
-
-	/**
-	 * A fast frequency ceiling in milliseconds
-	 */
-	private static final long FASTEST_INTERVAL = MILLISECONDS_PER_SECOND
-			* FASTEST_INTERVAL_IN_SECONDS;
-
-	private static final int ZOOM_LEVEL = 14;
-
-	/**
-	 * Distance from where we want to retrieve places according to user's
-	 * position
-	 */
-	private static final int RADIUS = 2000;
 
 	private GoogleMap mMap;
 
@@ -79,8 +46,8 @@ public class MainActivity extends FragmentActivity implements
 		// Create the LocationRequest object
 		mLocationRequest = LocationRequest.create();
 		mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-		mLocationRequest.setInterval(UPDATE_INTERVAL);
-		mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
+		mLocationRequest.setInterval(MapConstant.UPDATE_INTERVAL);
+		mLocationRequest.setFastestInterval(MapConstant.FASTEST_INTERVAL);
 
 		mLocationClient = new LocationClient(this, this, this);
 
@@ -166,12 +133,12 @@ public class MainActivity extends FragmentActivity implements
 			if (location == null) {
 				mLocationClient.requestLocationUpdates(mLocationRequest, this);
 			} else {
-				setPositionOnMap(location, ZOOM_LEVEL);
+				setPositionOnMap(location, MapConstant.ZOOM_LEVEL);
 			}
 
 			try {
 				SearchGooglePlaceParam googleParams = new SearchGooglePlaceParam(
-						this, location, RADIUS);
+						this, location, MapConstant.RADIUS);
 				new GetGooglePlacesService().execute(googleParams);
 
 			} catch (Exception e) {

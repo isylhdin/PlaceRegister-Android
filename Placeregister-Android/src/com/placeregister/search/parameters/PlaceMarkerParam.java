@@ -9,6 +9,7 @@ public class PlaceMarkerParam {
 
 	private Marker marker;
 	private Place place;
+	private String selectedType;
 	private String timeZone;
 	private Activity context;
 
@@ -16,13 +17,22 @@ public class PlaceMarkerParam {
 
 	}
 
-	public PlaceMarkerParam(Marker marker, Place place, String timeZone,
-			Activity context) {
+	public PlaceMarkerParam(Marker marker, Place place, String selectedType,
+			String timeZone, Activity context) {
 		super();
 		this.marker = marker;
 		this.place = place;
+		this.selectedType = selectedType;
 		this.timeZone = timeZone;
 		this.context = context;
+	}
+
+	public String getSelectedType() {
+		return selectedType;
+	}
+
+	public void setSelectedType(String selectedType) {
+		this.selectedType = selectedType;
 	}
 
 	public Marker getMarker() {

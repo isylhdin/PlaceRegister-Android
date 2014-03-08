@@ -20,7 +20,7 @@ import android.widget.Toast;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Marker;
 import com.placeregister.constants.AddPlaceStatusConstant;
-import com.placeregister.constants.PlaceConstant;
+import com.placeregister.constants.URLConstant;
 import com.placeregister.places.Place;
 import com.placeregister.search.parameters.PlaceMarkerParam;
 import com.placeregister.utils.TypesUtil;
@@ -54,12 +54,18 @@ public class RegisterUserPlaceService extends
 	 */
 	private Activity activity;
 
+	/**
+	 * Selected type
+	 */
+	private String selectedType;
+
 	@Override
 	protected Integer doInBackground(PlaceMarkerParam... placeMarkerParam) {
 		this.marker = placeMarkerParam[0].getMarker();
 		this.place = placeMarkerParam[0].getPlace();
 		this.timeZone = placeMarkerParam[0].getTimeZone();
 		this.activity = placeMarkerParam[0].getContext();
+		this.selectedType = placeMarkerParam[0].getSelectedType();
 
 		return addPlace(place);
 	}
@@ -88,7 +94,7 @@ public class RegisterUserPlaceService extends
 	 */
 	public int addPlace(Place place) {
 
-		String url = PlaceConstant.ADD_PLACE_URL;
+		String url = URLConstant.ADD_PLACE_URL;
 		int applicationStatus = 0;
 
 		try {
@@ -99,6 +105,7 @@ public class RegisterUserPlaceService extends
 			params.put("name", place.getName());
 			params.put("id", place.getId());
 			params.put("types", place.getTypes().toString());
+			params.put("selectedType", this.selectedType);
 			params.put("address", place.getAddress());
 			params.put("longitude", String.valueOf(place.getLongitude()));
 			params.put("latitude", String.valueOf(place.getLatitude()));

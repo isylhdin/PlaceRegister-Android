@@ -20,7 +20,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.placeregister.constants.PlaceConstant;
+import com.placeregister.constants.URLConstant;
 import com.placeregister.places.Place;
 import com.placeregister.places.PlaceType;
 import com.placeregister.search.parameters.SearchBDPlaceParam;
@@ -101,7 +101,7 @@ public class GetGooglePlacesService extends
 
 		Uri uri = new Uri.Builder()
 				.scheme("https")
-				.authority(PlaceConstant.PLACES_SEARCH_URL)
+				.authority(URLConstant.PLACES_SEARCH_URL)
 				.path("maps/api/place/search/json")
 				.appendQueryParameter("key",
 						PropertiesUtil.getProperty(activity, "API_KEY"))

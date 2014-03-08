@@ -1,6 +1,6 @@
 package com.placeregister.constants;
 
-public class PlaceConstant {
+public class URLConstant {
 
 	/**
 	 * Raspberry local jetty server url. Another context is added by default (ie
@@ -26,13 +26,12 @@ public class PlaceConstant {
 	/**
 	 * Back end url to retrieve already visited places
 	 */
-	public static final String GET_VISITED_PLACES_URL = BACK_END_HEROKU_URL
+	public static final String GET_VISITED_PLACES_URL = BACK_END_URL
 			+ "get/visited/places";
 
 	/**
 	 * Back end url to add a new place in DataBase
 	 */
-	public static final String ADD_PLACE_URL = BACK_END_HEROKU_URL
-			+ "add/place";
+	public static final String ADD_PLACE_URL = BACK_END_URL + "add/place";
 
 }
