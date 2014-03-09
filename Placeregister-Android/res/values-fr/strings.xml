@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">test</string>
     <string name="action_settings">Settings</string>
     <string name="OK">Valider</string>
     <string name="KO">Annuler</string>
@@ -9,7 +8,7 @@
     <!-- SUCCES -->
     <string name="status_200">Le lieu a été ajouté avec succès</string>
     
-    <!-- AQUARIUM -->
+    <!-- AQUARIUM --> 
     <string name="status_5000">Vous avez epuisé votre quota d\'aquarium pour aujourd\'hui</string>
      
     <!-- ART -->
@@ -59,6 +58,11 @@
 	<!-- Alert message to select a place type -->
 	<string name="dialog_title_type">Sélection de type</string>
     <string name="dialog_select_type">Veuillez choisir un type pour le lieu que vous visitez</string>
+    
+    <!-- Navigation drawer items -->
+    <string name="navigation_countdown">Etat des visites</string>
+    <string name="navigation_last_achievements">Derniers hauts-faits</string>
+    <string name="navigation_all_achievements">Liste des hauts-faits</string>
     
 
 </resources>
