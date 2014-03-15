@@ -17,15 +17,16 @@ public class ConnectionActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_connection);
 
-		String hasInternet = (ConnectionUtils.hasConnection(this)) ? "You are connected to the Internet" : "Please connect to the Internet";
-		TextView textViewInternet = (TextView)findViewById(R.id.hasInternet);
+		String hasInternet = (ConnectionUtils.hasConnection(this)) ? "You are connected to the Internet"
+				: "Please connect to the Internet";
+		TextView textViewInternet = (TextView) findViewById(R.id.hasInternet);
 		textViewInternet.setText(hasInternet);
 
-		String hasGPSEnabled = (ConnectionUtils.hasGPSEnabled(this)) ? "Your GPS is enabled" : "Please enable your GPS";
-		// TODO : POPUP local settings Activity to activate GPS 
-		TextView textViewGPS = (TextView)findViewById(R.id.hasGPSEnabled);
+		String hasGPSEnabled = (ConnectionUtils.hasGPSEnabled(this)) ? "Your GPS is enabled"
+				: "Please enable your GPS";
+		// TODO : POPUP local settings Activity to activate GPS
+		TextView textViewGPS = (TextView) findViewById(R.id.hasGPSEnabled);
 		textViewGPS.setText(hasGPSEnabled);
-
 
 	}
 

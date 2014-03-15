@@ -11,12 +11,17 @@ public class URLConstant {
 	/**
 	 * Embedded jetty server launched with maven/eclipse
 	 */
-	private static final String BACK_END_URL = "http://192.168.0.7:8080/rest/place/service/";
+	private static final String BACK_END_URL = "http://192.168.0.7:8080/rest/";
 
 	/**
 	 * Heroku url
 	 */
 	private static final String BACK_END_HEROKU_URL = "http://sheltered-wildwood-2400.herokuapp.com/rest/place/service/";
+
+	/**
+	 * Back end url to login to the app
+	 */
+	public static final String LOGIN_URL = BACK_END_URL + "user/service/login";
 
 	/**
 	 * Google places web service url
@@ -27,11 +32,12 @@ public class URLConstant {
 	 * Back end url to retrieve already visited places
 	 */
 	public static final String GET_VISITED_PLACES_URL = BACK_END_URL
-			+ "get/visited/places";
+			+ "place/service/get/visited/places";
 
 	/**
 	 * Back end url to add a new place in DataBase
 	 */
-	public static final String ADD_PLACE_URL = BACK_END_URL + "add/place";
+	public static final String ADD_PLACE_URL = BACK_END_URL
+			+ "place/service/add/place";
 
 }

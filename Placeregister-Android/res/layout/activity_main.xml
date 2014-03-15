@@ -19,13 +19,49 @@
 	</LinearLayout>
 	
 	<!-- The navigation drawer -->
-    <ListView android:id="@+id/left_drawer"
-        android:layout_width="240dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:choiceMode="singleChoice"
-        android:divider="@color/list_divider"
-        android:dividerHeight="1dp"
-        android:listSelector="@drawable/list_selector"
-        android:background="@color/list_background"/>
+	<LinearLayout
+	    android:id="@+id/drawer_view"
+	    android:layout_width="240dp"
+	    android:layout_height="fill_parent"
+	    android:orientation="vertical"
+	    android:layout_gravity="start"
+	    android:background="@color/list_background">
+	    
+	    
+	    <LinearLayout
+		    android:id="@+id/scoreLayout"
+		    android:layout_width="match_parent"
+		    android:layout_height="50dp"
+		    android:orientation="vertical">
+		    
+	        	<TextView
+			        android:layout_width="match_parent"
+			        android:layout_height="25dp"
+			        android:gravity="center"
+			        android:text="Score" />
+	        
+			    <TextView
+			        android:id="@+id/drawer_score"
+			        android:layout_width="match_parent"
+			        android:layout_height="25dp"
+			        android:gravity="center"/>
+	    </LinearLayout>
+	    
+	    
+	    <ImageView
+	        android:id="@+id/imageView1"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:src="@drawable/ic_whats_hot" />
+	    
+	    <ListView android:id="@+id/left_drawer"
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:layout_gravity="start"
+	        android:choiceMode="singleChoice"
+	        android:divider="@color/list_divider"
+	        android:dividerHeight="1dp"
+	        android:listSelector="@drawable/list_selector" />
+    
+    </LinearLayout>
 </android.support.v4.widget.DrawerLayout>

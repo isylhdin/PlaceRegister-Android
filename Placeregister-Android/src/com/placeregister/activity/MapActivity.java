@@ -18,7 +18,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -32,6 +34,7 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.placeregister.R;
 import com.placeregister.adapter.NavDrawerListAdapter;
+import com.placeregister.application.ApplicationInfo;
 import com.placeregister.asynchtask.GetGooglePlacesService;
 import com.placeregister.constants.MapConstant;
 import com.placeregister.model.NavDrawerItem;
@@ -40,7 +43,7 @@ import com.placeregister.search.parameters.SearchGooglePlaceParam;
 /**
  * 
  * FIXME : Externalize Navigation drawer methods + create Activities instead of
- * fragments when an item is clicked
+ * fragments when an item is clicked + display score with a star
  * 
  * @author yoann
  * 
@@ -58,6 +61,8 @@ public class MapActivity extends FragmentActivity implements
 
 	/** Navigation drawer attributes */
 	private DrawerLayout mDrawerLayout;
+	private LinearLayout mDrawerPanel;
+	private TextView mDrawerScore;
 	private ListView mDrawerList;
 	private ActionBarDrawerToggle mDrawerToggle;
 
@@ -79,11 +84,21 @@ public class MapActivity extends FragmentActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		ApplicationInfo applicationInfo = (ApplicationInfo) this
+				.getApplication();
+
 		/** Navigation drawer initialization */
 
 		mTitle = mDrawerTitle = getTitle();
 
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		mDrawerPanel = (LinearLayout) findViewById(R.id.drawer_view);
+
+		// Set user score
+		mDrawerScore = (TextView) findViewById(R.id.drawer_score);
+		mDrawerScore.setText(applicationInfo.getUser().getScore());
+
+		// Set list items
 		mDrawerList = (ListView) findViewById(R.id.left_drawer);
 		navMenuTitles = getNavigationDrawerTexts();
 		navMenuIcons = getNavigationDrawerIcons();
@@ -214,7 +229,7 @@ public class MapActivity extends FragmentActivity implements
 			mDrawerList.setItemChecked(position, true);
 			mDrawerList.setSelection(position);
 			setTitle(navMenuTitles.get(position));
-			mDrawerLayout.closeDrawer(mDrawerList);
+			mDrawerLayout.closeDrawer(mDrawerPanel);
 		} else {
 			// error in creating fragment
 			Log.e("MainActivity", "Error in creating fragment");
@@ -227,7 +242,7 @@ public class MapActivity extends FragmentActivity implements
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		// if nav drawer is opened, hide the action items
-		boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
+		boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerPanel);
 		menu.findItem(R.id.action_settings).setVisible(!drawerOpen);
 		return super.onPrepareOptionsMenu(menu);
 	}
