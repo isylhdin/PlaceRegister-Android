@@ -10,6 +10,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
@@ -19,8 +20,10 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Marker;
+import com.placeregister.application.ApplicationInfo;
 import com.placeregister.constants.AddPlaceStatusConstant;
 import com.placeregister.constants.URLConstant;
+import com.placeregister.model.UserInfo;
 import com.placeregister.places.Place;
 import com.placeregister.search.parameters.PlaceMarkerParam;
 import com.placeregister.utils.TypesUtil;
@@ -32,7 +35,7 @@ import com.placeregister.utils.TypesUtil;
  * 
  */
 public class RegisterUserPlaceService extends
-		AsyncTask<PlaceMarkerParam, String, Integer> {
+		AsyncTask<PlaceMarkerParam, String, UserInfo> {
 
 	/**
 	 * Marker represented on map
@@ -60,7 +63,7 @@ public class RegisterUserPlaceService extends
 	private String selectedType;
 
 	@Override
-	protected Integer doInBackground(PlaceMarkerParam... placeMarkerParam) {
+	protected UserInfo doInBackground(PlaceMarkerParam... placeMarkerParam) {
 		this.marker = placeMarkerParam[0].getMarker();
 		this.place = placeMarkerParam[0].getPlace();
 		this.timeZone = placeMarkerParam[0].getTimeZone();
@@ -71,18 +74,23 @@ public class RegisterUserPlaceService extends
 	}
 
 	@Override
-	protected void onPostExecute(Integer serverStatus) {
-		super.onPostExecute(serverStatus);
+	protected void onPostExecute(UserInfo userInfo) {
+		super.onPostExecute(userInfo);
 
 		int resourceId = activity.getResources().getIdentifier(
-				"status_" + serverStatus, "string", activity.getPackageName());
+				"status_" + userInfo.getCodeStatus(), "string",
+				activity.getPackageName());
 		Toast t = Toast.makeText(this.activity, resourceId, Toast.LENGTH_SHORT);
 		t.show();
 
-		if (AddPlaceStatusConstant.OK == serverStatus) {
+		if (AddPlaceStatusConstant.OK == userInfo.getCodeStatus()) {
 			int markerId = TypesUtil.getVisitedMarkerTypeId(place.getTypes());
 			marker.setIcon(BitmapDescriptorFactory.fromResource(markerId));
 		}
+
+		// Update global variable : score
+		ApplicationInfo appInfo = (ApplicationInfo) activity.getApplication();
+		appInfo.getUser().setScore(userInfo.getScore());
 
 	}
 
@@ -92,10 +100,11 @@ public class RegisterUserPlaceService extends
 	 * @param place
 	 * @return the new place id
 	 */
-	public int addPlace(Place place) {
+	public UserInfo addPlace(Place place) {
 
 		String url = URLConstant.ADD_PLACE_URL;
 		int applicationStatus = 0;
+		UserInfo userInfo = null;
 
 		try {
 			HttpClient httpclient = new DefaultHttpClient();
@@ -127,11 +136,32 @@ public class RegisterUserPlaceService extends
 				Log.e("Status Code", "Bad status code" + statusCode);
 			}
 
-			applicationStatus = Integer.valueOf(EntityUtils.toString(response
+			userInfo = getUserInfoFromJSON(EntityUtils.toString(response
 					.getEntity()));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return applicationStatus;
+		return userInfo;
 	}
+
+	/**
+	 * Parse JSON response to retrieve user info
+	 * 
+	 * @param httpResult
+	 * @return
+	 * @throws JSONException
+	 */
+	public UserInfo getUserInfoFromJSON(String httpResult) throws JSONException {
+
+		UserInfo info = new UserInfo();
+		JSONObject json = new JSONObject(httpResult);
+
+		// FIXME achievements
+		info.setAchievements(null);
+		info.setScore(json.getString("score"));
+		info.setCodeStatus(Integer.parseInt(json.getString("codeStatus")));
+
+		return info;
+	}
+
 }
