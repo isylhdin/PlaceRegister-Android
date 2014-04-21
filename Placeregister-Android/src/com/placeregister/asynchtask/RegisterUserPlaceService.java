@@ -1,6 +1,8 @@
 package com.placeregister.asynchtask;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.http.HttpResponse;
@@ -10,19 +12,23 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Marker;
+import com.placeregister.R;
 import com.placeregister.application.ApplicationInfo;
 import com.placeregister.constants.AddPlaceStatusConstant;
 import com.placeregister.constants.URLConstant;
+import com.placeregister.model.Achievement;
 import com.placeregister.model.UserInfo;
 import com.placeregister.places.Place;
 import com.placeregister.search.parameters.PlaceMarkerParam;
@@ -83,14 +89,58 @@ public class RegisterUserPlaceService extends
 		Toast t = Toast.makeText(this.activity, resourceId, Toast.LENGTH_SHORT);
 		t.show();
 
-		if (AddPlaceStatusConstant.OK == userInfo.getCodeStatus()) {
-			int markerId = TypesUtil.getVisitedMarkerTypeId(place.getTypes());
-			marker.setIcon(BitmapDescriptorFactory.fromResource(markerId));
-		}
-
 		// Update global variable : score
 		ApplicationInfo appInfo = (ApplicationInfo) activity.getApplication();
+		// compute how many points user has earned submitting his place
+		int computedEarnedPoints = Integer.parseInt(userInfo.getScore())
+				- Integer.parseInt(appInfo.getUser().getScore());
 		appInfo.getUser().setScore(userInfo.getScore());
+
+		// TODO refactor
+		if (AddPlaceStatusConstant.OK == userInfo.getCodeStatus()) {
+			// Change submited place icon to another icon representing a visited
+			// place
+			int markerId = TypesUtil.getVisitedMarkerTypeId(place.getTypes());
+			marker.setIcon(BitmapDescriptorFactory.fromResource(markerId));
+
+			// Display a custom dialog to show unlocked achievement
+			if (userInfo.getAchievements() != null
+					&& !userInfo.getAchievements().isEmpty()) {
+
+				for (Achievement unlockedAchievement : userInfo
+						.getAchievements()) {
+
+					StringBuilder sb = new StringBuilder();
+					sb.append(unlockedAchievement.getTitle());
+					sb.append(" : ");
+					sb.append(unlockedAchievement.getDescription());
+
+					AlertDialog.Builder achievementDialogBuilder = new AlertDialog.Builder(
+							this.activity);
+					achievementDialogBuilder
+							.setTitle(R.string.unlocked_achievement)
+							.setMessage(sb).setCancelable(false)
+							.setPositiveButton(R.string.OK, null);
+					AlertDialog achievementAlert = achievementDialogBuilder
+							.create();
+					achievementAlert.show();
+				}
+			}
+
+			// Display a custom dialog to show how much points user has won
+			AlertDialog.Builder scoreDialogBuilder = new AlertDialog.Builder(
+					this.activity);
+			scoreDialogBuilder
+					.setTitle(R.string.congratulation)
+					.setMessage(
+							this.activity.getString(
+									R.string.you_earned_some_points,
+									computedEarnedPoints)).setCancelable(false)
+					.setPositiveButton(R.string.OK, null);
+			AlertDialog scoreAlert = scoreDialogBuilder.create();
+			scoreAlert.show();
+
+		}
 
 	}
 
@@ -156,8 +206,20 @@ public class RegisterUserPlaceService extends
 		UserInfo info = new UserInfo();
 		JSONObject json = new JSONObject(httpResult);
 
-		// FIXME achievements
-		info.setAchievements(null);
+		JSONArray achievements = json.getJSONArray("achievements");
+		List<Achievement> unlockedAchievements = new ArrayList<Achievement>();
+		for (int i = 0; i < achievements.length(); i++) {
+			JSONObject achievementJSON = achievements.getJSONObject(i);
+			Achievement achievement = new Achievement();
+			achievement
+					.setDescription(achievementJSON.getString("description"));
+			achievement.setTitle(achievementJSON.getString("title"));
+			achievement.setPoints(achievementJSON.getLong("points"));
+
+			unlockedAchievements.add(achievement);
+		}
+
+		info.setAchievements(unlockedAchievements);
 		info.setScore(json.getString("score"));
 		info.setCodeStatus(Integer.parseInt(json.getString("codeStatus")));
 

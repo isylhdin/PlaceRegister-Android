@@ -9,6 +9,10 @@ public class Achievement {
 	private Achievement achievementExtension;
 	private String category;
 
+	public Achievement() {
+
+	}
+
 	public Achievement(String title, String description, long points,
 			Achievement achievementExtension, String category) {
 		super();

@@ -64,5 +64,11 @@
     <string name="navigation_last_achievements">Derniers hauts-faits</string>
     <string name="navigation_all_achievements">Liste des hauts-faits</string>
     
+	<!-- Dialog message when a user adds a place -->
+    <string name="congratulation">Félicitation !</string>
+    <string name="you_earned_some_points">Vous venez de gagner %1$s points</string>
+    
+    <!-- Dialog message when a user unlocked an achievement -->
+    <string name="unlocked_achievement">Vous venez de débloquer un haut-fait !</string>
 
 </resources>
