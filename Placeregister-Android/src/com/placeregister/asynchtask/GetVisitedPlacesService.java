@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.http.HttpResponse;
@@ -50,7 +51,7 @@ public class GetVisitedPlacesService extends
 	/**
 	 * Google map object
 	 */
-	private GoogleMap mMap;
+	private GoogleMap mMap = null;
 
 	/**
 	 * Mapping google marker <-> Place object
@@ -98,8 +99,12 @@ public class GetVisitedPlacesService extends
 	protected void onPostExecute(List<VisitedPlace> alreadyVisitedPlaces) {
 		super.onPostExecute(alreadyVisitedPlaces);
 
-		mMap = ((MapFragment) this.activity.getFragmentManager()
-				.findFragmentById(R.id.map)).getMap();
+		MapFragment mapFragment = ((MapFragment) this.activity
+				.getFragmentManager().findFragmentById(R.id.map));
+
+		if (mapFragment != null) {
+			mMap = mapFragment.getMap();
+		}
 
 		// Display place markers on map
 		displayMarkers(mMap);
@@ -162,7 +167,7 @@ public class GetVisitedPlacesService extends
 
 			for (String placeType : this.alreadyVisitedPlaces.get(index)
 					.getTypes()) {
-				lowerCaseTypes.add(placeType.toLowerCase());
+				lowerCaseTypes.add(placeType.toLowerCase(Locale.US));
 			}
 
 			this.alreadyVisitedPlaces.get(index).setTypes(lowerCaseTypes);
@@ -327,7 +332,8 @@ public class GetVisitedPlacesService extends
 
 			String types = json.getString("types");
 			types = types.replaceAll("[\\[\\]\"]", "");
-			place.setTypes(new ArrayList(Arrays.asList(types.split(","))));
+			place.setTypes(new ArrayList<String>(
+					Arrays.asList(types.split(","))));
 
 			JSONObject location = json.getJSONObject("location");
 			place.setLatitude((Double) location.get("latitude"));

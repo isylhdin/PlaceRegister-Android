@@ -153,7 +153,6 @@ public class RegisterUserPlaceService extends
 	public UserInfo addPlace(Place place) {
 
 		String url = URLConstant.ADD_PLACE_URL;
-		int applicationStatus = 0;
 		UserInfo userInfo = null;
 
 		try {
